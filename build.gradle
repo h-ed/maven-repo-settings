@@ -1,0 +1,63 @@
+/*buildscript {
+    repositories {
+        mavenLocal()
+        maven { url "https://gradle-plugins.gradle.org/m2/" }
+        maven { url "https://repo.grails.org/grails/core" }
+        maven { url "https://plugins.gradle.org/m2/" }
+    }
+
+    dependencies {
+        classpath 'net.linguica.gradle:maven-settings-plugin:0.5'
+        //classpath "com.fipsoft.gradle:maven-repo-settings:0.7-SNAPSHOT"
+    }
+
+}*/
+
+plugins {
+    id 'java'
+    id 'groovy'
+    id 'maven'
+    id 'maven-publish'
+    id "com.gradle.plugin-publish" version "0.9.7"
+}
+
+//apply plugin: 'maven-repo-settings'
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+    jcenter()
+    maven { url "https://plugins.gradle.org/m2/" }
+}
+
+
+dependencies {
+    compile gradleApi()
+    compile localGroovy()
+
+    testCompile 'junit:junit:4.11'
+}
+
+sourceCompatibility = '1.8'
+targetCompatibility = '1.8'
+
+
+pluginBundle {
+    website = 'https://github.com/h-ed/maven-repo-settings'
+    vcsUrl = 'https://github.com/h-ed/maven-repo-settings'
+    description = 'Gradle plugin for resolving custom Maven repositories directly from settings file'
+    tags = ['settings', 'maven', 'maven-repo']
+
+    plugins {
+        mavenSettings {
+            id = 'maven-repo-settings'
+            displayName = 'Maven Settings Plugin'
+        }
+    }
+
+    mavenCoordinates {
+        groupId = 'com.fipsoft.gradle'
+        artifactId = 'maven-repo-settings'
+    }
+}
+defaultTasks 'clean', 'publishToMavenLocal'
