@@ -33,7 +33,7 @@ pluginBundle {
 
     plugins {
         mavenRepoSettings {
-            id = 'maven-repo-settings'
+            id = 'com.fipsoft.maven-repo-settings'
             displayName = 'Maven Repo Settings Plugin'
         }
     }

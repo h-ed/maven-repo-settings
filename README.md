@@ -1,7 +1,7 @@
 # Gradle maven-repo-settings plugin
 _Gradle Custom Maven Repository Settings Plugin_
 
-Inspired by [maven-repo-settings](https://github.com/mark-vieira/gradle-maven-settings-plugin), this plugin 
+Inspired by [maven-settings](https://github.com/mark-vieira/gradle-maven-settings-plugin), this plugin 
 aims to facilitate authentication for the enterprise/internal maven repositories.
 
  
@@ -21,13 +21,13 @@ To use the plugin, add the following to your `build.gradle` file.
         }
     }
 
-    apply plugin: 'maven-repo-settings'
+    apply plugin: 'com.fipsoft.maven-repo-settings'
     
 For Gradle 2.1+ you can use the new plugin mechanism to download the plugin from the 
 [Gradle Plugin Portal](http://plugins.gradle.org/).
     
     plugins {
-      id "maven-repo-settings" version "0.1"
+      id "com.fipsoft.maven-repo-settings" version "0.1"
     }
 
 

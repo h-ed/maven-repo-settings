@@ -32,7 +32,7 @@ class CoreTests extends MavenTestBase {
     @Before
     void applyMavenRepoSettingsPlugin() {
         project.with {
-            apply plugin: 'maven-repo-settings'
+            apply plugin: 'com.fipsoft.maven-repo-settings'
         }
 
         project.with {
