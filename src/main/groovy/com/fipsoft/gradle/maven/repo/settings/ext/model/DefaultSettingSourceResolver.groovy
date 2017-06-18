@@ -27,7 +27,7 @@ import com.fipsoft.gradle.maven.repo.settings.utils.SourceStrategy
  */
 class DefaultSettingSourceResolver implements MavenRepoSettingSourceAware {
 
-    private static String maven_settings = System.getProperty("user.home") + '/.m2/settings.xml'
+    static String maven_settings = System.getProperty("user.home") + '/.m2/settings.xml'
 
     private final MavenRepoSettingsExtension extension
 

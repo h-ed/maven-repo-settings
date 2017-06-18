@@ -30,15 +30,30 @@ class PluginTasks extends DefaultTask {
     void showInternalRepos() {
         MavenRepoSettingsExtension ext = (MavenRepoSettingsExtension) project.mavenInternal
         def sourceAware = ext.settingAdapter.resolveRepoSourceAware()
+        Set<String> serversFound = []
 
         if (SourceStrategy.MAVEN.name() == sourceAware.strategyName) {
-            def parsed_settings = new XmlSlurper().parse(sourceAware.settingsFilePath)
+            File home_m2_settings = new File(sourceAware.settingsFilePath)
 
-            println "Custom repositories found (Total: ${parsed_settings.servers.server.size()})"
-            parsed_settings.servers.server.each {
-                println "+---${it.id}"
+            if (home_m2_settings.exists()) {
+                def extractedServers = getServersFromXml(new XmlSlurper().parse(home_m2_settings))
+                serversFound.addAll(extractedServers)
+            }
+
+            File m2_home_settings = new File(sourceAware.maven_home_settings)
+            if (m2_home_settings.exists()) {
+                def extractedServers = getServersFromXml(new XmlSlurper().parse(m2_home_settings))
+                serversFound.addAll(extractedServers)
+            }
+
+            println "Custom repositories found (Total: ${serversFound.size()})"
+            serversFound.each {
+                println "+---${it}"
             }
         }
     }
 
+    private static List<String> getServersFromXml(def entry) {
+        entry.servers.server.collect { (String) it.id }
+    }
 }
