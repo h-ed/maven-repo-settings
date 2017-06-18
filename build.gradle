@@ -32,9 +32,9 @@ pluginBundle {
     tags = ['settings', 'maven', 'maven-repo', 'grails2']
 
     plugins {
-        mavenSettings {
+        mavenRepoSettings {
             id = 'maven-repo-settings'
-            displayName = 'Maven Settings Plugin'
+            displayName = 'Maven Repo Settings Plugin'
         }
     }
 

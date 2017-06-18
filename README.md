@@ -1,8 +1,8 @@
-# Gradle maven-repo-settings
+# Gradle maven-repo-settings plugin
 _Gradle Custom Maven Repository Settings Plugin_
 
 Inspired by [maven-repo-settings](https://github.com/mark-vieira/gradle-maven-settings-plugin), this plugin 
-aims to facilitate dependency management from the enterprise/internal maven repositories.
+aims to facilitate authentication for the enterprise/internal maven repositories.
 
  
 ## Usage
