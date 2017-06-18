@@ -26,7 +26,7 @@ import org.gradle.api.Incubating
 trait CredentialProvider {
 
     /**
-     * @param repo from which provides repoId to be scanned
+     * @param repo which provides repoId to be scanned
      * @return {@link Tuple2} pair consisting of username and password
      */
     abstract Tuple2<String, String> resolveCredentials(RepoSpec repo)

@@ -24,7 +24,6 @@ import org.gradle.api.Incubating
 import org.gradle.api.Project
 import org.gradle.api.ProjectState
 
-import static MavenRepoSettingsExtension.INTERNAL_MAVEN_REPO_EXT
 
 /**
  * @author Edgar Harutyunyan
@@ -51,10 +50,6 @@ class MavenRepoSettingsAdapter implements SettingAdapter {
 
     @Override
     void afterEvaluate(Project project, ProjectState projectState) {
-        def log = project.getLogger()
-
-        log.debug("looking for $INTERNAL_MAVEN_REPO_EXT....")
-
         sourceResolver.validateEntries(repos)
 
         repos.each { RepoSpec repo ->
