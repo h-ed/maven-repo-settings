@@ -44,7 +44,6 @@ class MavenRepoSettingsPlugin implements Plugin<Project> {
 
     private static void applyAdditionalPlugins(Project project) {
         project.afterEvaluate {
-            project.pluginManager.apply('maven')
             project.pluginManager.apply('maven-publish')
         }
     }
