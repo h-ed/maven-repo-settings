@@ -67,6 +67,9 @@ The plugin will search repository definition first from `user.home/.m2/settings.
        
 
 
+> Note: _yourRepoId_ defined in settings.xml must match with the one defined 
+in _mavenInternal_ closure
+
               
 > *Note: the order of looking for xml file is based on maven convention:*
 
@@ -79,7 +82,7 @@ todo: in progres...
 
 In often cases you might define your internal repository credentials other place than `settings.xml` file.
 For example in [Grails 2](http://docs.grails.org/2.5.x/guide/conf.html#dependencyRepositories) authentication done by
-`aether` or `ivy` requires to define your repository credentials in `${user.home}/.grails/settings.xml`. To avoid duplicated
+`aether` or `ivy` requires to define your repository credentials in `${user.home}/.grails/settings.groovy`. To avoid duplicated
 definitions *MAVEN-REPO-SETTINGS* plugin gives appropriate api to define custom source from which authentication 
 credentials will be resolved.
 
