@@ -17,7 +17,7 @@ To use the plugin, add the following to your `build.gradle` file.
         }
         
         dependencies {
-            classpath 'com.fipsoft.gradle:maven-repo-settings:0.2.1'
+            classpath 'com.fipsoft.gradle:maven-repo-settings:0.2.2'
         }
     }
 
@@ -27,7 +27,7 @@ For Gradle 2.1+ you can use the new plugin mechanism to download the plugin from
 [Gradle Plugin Portal](http://plugins.gradle.org/).
     
     plugins {
-      id "com.fipsoft.maven-repo-settings" version "0.2.1"
+      id "com.fipsoft.maven-repo-settings" version "0.2.2"
     }
 
 

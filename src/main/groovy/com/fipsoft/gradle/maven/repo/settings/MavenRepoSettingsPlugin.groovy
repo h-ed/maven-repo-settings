@@ -32,20 +32,12 @@ class MavenRepoSettingsPlugin implements Plugin<Project> {
 
         createPluginTasks(project)
 
-        applyAdditionalPlugins(project)
-
         createPluginExtension(project)
     }
 
     private static void createPluginExtension(Project project) {
         project.extensions.create(MavenRepoSettingsExtension.INTERNAL_MAVEN_REPO_EXT,
                 MavenRepoSettingsExtension.class, project)
-    }
-
-    private static void applyAdditionalPlugins(Project project) {
-        project.afterEvaluate {
-            project.pluginManager.apply('maven-publish')
-        }
     }
 
     private static void createPluginTasks(Project project) {
