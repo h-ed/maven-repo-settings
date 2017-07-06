@@ -38,6 +38,7 @@ class MavenRepoSettingsPlugin implements Plugin<Project> {
     private static void createPluginExtension(Project project) {
         project.extensions.create(MavenRepoSettingsExtension.INTERNAL_MAVEN_REPO_EXT,
                 MavenRepoSettingsExtension.class, project)
+
     }
 
     private static void createPluginTasks(Project project) {

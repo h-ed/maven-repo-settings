@@ -13,21 +13,12 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package com.fipsoft.gradle.maven.repo.settings.ext.api
-
-import com.fipsoft.gradle.maven.repo.settings.ext.model.RepoSpec
-import org.gradle.api.Incubating
+package com.fipsoft.gradle.maven.repo.settings.model
 
 /**
  * @author Edgar Harutyunyan
- * @since 0.1
  */
-@Incubating
-trait CredentialProvider {
-
-    /**
-     * @param repo which provides repoId to be scanned
-     * @return {@link Tuple2} pair consisting of username and password
-     */
-    abstract Tuple2<String, String> resolveCredentials(RepoSpec repo)
+enum SourceStrategy {
+    MAVEN,
+    GROOVY
 }

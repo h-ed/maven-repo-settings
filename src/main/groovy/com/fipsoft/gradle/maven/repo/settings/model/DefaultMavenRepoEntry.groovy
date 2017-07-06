@@ -13,20 +13,37 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package com.fipsoft.gradle.maven.repo.settings.ext.api
+package com.fipsoft.gradle.maven.repo.settings.model
 
-import org.gradle.api.Project
-import org.gradle.api.ProjectEvaluationListener
+import com.fipsoft.gradle.maven.repo.settings.api.MavenRepo
+import groovy.transform.EqualsAndHashCode
+import groovy.transform.ToString
 
 /**
  * @author Edgar Harutyunyan
+ * @since 0.3.0
  */
-trait SettingAdapter implements ProjectEvaluationListener {
+@ToString(includes = 'serverId', includePackage = false)
+@EqualsAndHashCode(includes = ['serverId', 'serverUrl'])
+class DefaultMavenRepoEntry implements MavenRepo {
+    String serverId
+    String serverUrl
 
-    abstract MavenRepoSettingSourceAware resolveRepoSourceAware()
+    void id(String repoId) {
+        this.serverId = repoId
+    }
+
+    void url(String url) {
+        this.serverUrl = url
+    }
 
     @Override
-    void beforeEvaluate(Project project) {
-        //nothing here
+    String getId() {
+        return serverId
+    }
+
+    @Override
+    String getUrl() {
+        return serverUrl
     }
 }

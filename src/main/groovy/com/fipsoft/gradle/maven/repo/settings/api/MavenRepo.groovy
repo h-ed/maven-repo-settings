@@ -13,25 +13,19 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package com.fipsoft.gradle.maven.repo.settings.ext.api
-
-import com.fipsoft.gradle.maven.repo.settings.ext.model.RepoSpec
+package com.fipsoft.gradle.maven.repo.settings.api
 
 /**
  * @author Edgar Harutyunyan
- * @since 0.1
+ * @since 0.3.0
  */
-interface MavenRepoSettingSourceAware {
+trait MavenRepo {
 
-    //first see if older version of maven_home
-    static String maven_home_settings = (System.getenv("MAVEN_HOME") ?:
-            System.getenv("M2_HOME")) + "/conf/settings.xml"
+    abstract String getId()
 
-    String getStrategyName()
+    abstract String getUrl()
 
-    String getSettingsFilePath()
-
-    CredentialProvider getCredentialProvider()
-
-    void validateEntries(Collection<? extends RepoSpec> repoSpec)
+    Map getAdditionalConfigs() {
+        return Collections.emptyMap()
+    }
 }

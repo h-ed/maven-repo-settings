@@ -15,9 +15,11 @@
  */
 package com.fipsoft.gradle.maven.repo.settings.ext
 
-import com.fipsoft.gradle.maven.repo.settings.ext.adapter.MavenRepoSettingsAdapter
-import com.fipsoft.gradle.maven.repo.settings.ext.api.SettingAdapter
-import com.fipsoft.gradle.maven.repo.settings.ext.model.RepoSpec
+import com.fipsoft.gradle.maven.repo.settings.adapter.MavenRepoSettingsAdapter
+import com.fipsoft.gradle.maven.repo.settings.api.MavenRepo
+import com.fipsoft.gradle.maven.repo.settings.api.MavenRepoConfig
+import com.fipsoft.gradle.maven.repo.settings.model.DefaultMavenRepoConfig
+import com.fipsoft.gradle.maven.repo.settings.model.DefaultMavenRepoEntry
 import org.gradle.api.Incubating
 import org.gradle.api.Project
 
@@ -29,29 +31,36 @@ import org.gradle.api.Project
 class MavenRepoSettingsExtension {
     static final String INTERNAL_MAVEN_REPO_EXT = 'mavenInternal'
 
-    private Project project
+    MavenRepoSettingsAdapter adapter
 
-    SettingAdapter settingAdapter
+    Project project
 
-    List<? extends RepoSpec> repos = []
+    List<? extends MavenRepo> repos = []
 
+    MavenRepoConfig configObject = new DefaultMavenRepoConfig()
 
-    def repo(@DelegatesTo(strategy = Closure.DELEGATE_ONLY, value = RepoSpec) Closure c) {
-        def repoSpec = new RepoSpec()
+    MavenRepoSettingsExtension(Project project) {
+        this.project = project
+        this.adapter = MavenRepoSettingsAdapter.init(this)
+        project.gradle.addListener(adapter)
+    }
+
+    def repo(@DelegatesTo(strategy = Closure.DELEGATE_ONLY, value = DefaultMavenRepoEntry) Closure c) {
+        def repoSpec = new DefaultMavenRepoEntry()
         def body = c.rehydrate(repoSpec, this, this)
         body.resolveStrategy = Closure.DELEGATE_ONLY
         body()
         repos.add(repoSpec)
     }
 
-
-    MavenRepoSettingsExtension(Project project) {
-        this.project = project
-        this.settingAdapter = new MavenRepoSettingsAdapter(this)
-        registerAdapters()
+    def conf(@DelegatesTo(strategy = Closure.DELEGATE_ONLY, value = DefaultMavenRepoConfig) Closure c) {
+        this.configObject = new DefaultMavenRepoConfig()
+        def body = c.rehydrate(configObject, this, this)
+        body.resolveStrategy = Closure.DELEGATE_ONLY
+        body()
     }
 
-    private void registerAdapters() {
-        this.project.gradle.addListener(settingAdapter)
+    File getUserSettingsFile() {
+        return project.file(configObject.customSettingsFilePath)
     }
 }

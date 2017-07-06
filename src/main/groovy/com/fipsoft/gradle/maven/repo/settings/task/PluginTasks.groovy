@@ -15,8 +15,8 @@
  */
 package com.fipsoft.gradle.maven.repo.settings.task
 
+import com.fipsoft.gradle.maven.repo.settings.api.AbstractMavenRepoSettingsAware
 import com.fipsoft.gradle.maven.repo.settings.ext.MavenRepoSettingsExtension
-import com.fipsoft.gradle.maven.repo.settings.utils.SourceStrategy
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
 
@@ -29,31 +29,8 @@ class PluginTasks extends DefaultTask {
     @TaskAction
     void showInternalRepos() {
         MavenRepoSettingsExtension ext = (MavenRepoSettingsExtension) project.mavenInternal
-        def sourceAware = ext.settingAdapter.resolveRepoSourceAware()
-        Set<String> serversFound = []
+        AbstractMavenRepoSettingsAware settingsAware = ext.adapter.settingsAware
 
-        if (SourceStrategy.MAVEN.name() == sourceAware.strategyName) {
-            File home_m2_settings = new File(sourceAware.settingsFilePath)
-
-            if (home_m2_settings.exists()) {
-                def extractedServers = getServersFromXml(new XmlSlurper().parse(home_m2_settings))
-                serversFound.addAll(extractedServers)
-            }
-
-            File m2_home_settings = new File(sourceAware.maven_home_settings)
-            if (m2_home_settings.exists()) {
-                def extractedServers = getServersFromXml(new XmlSlurper().parse(m2_home_settings))
-                serversFound.addAll(extractedServers)
-            }
-
-            println "Custom repositories found (Total: ${serversFound.size()})"
-            serversFound.each {
-                println "+---${it}"
-            }
-        }
-    }
-
-    private static List<String> getServersFromXml(def entry) {
-        entry.servers.server.collect { (String) it.id }
+        settingsAware.printFoundRepos()
     }
 }

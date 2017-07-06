@@ -6,6 +6,10 @@ plugins {
     id "com.gradle.plugin-publish" version "0.9.7"
 }
 
+ext {
+    mavenVersion = '3.5.0'
+}
+
 repositories {
     mavenLocal()
     mavenCentral()

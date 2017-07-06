@@ -16,28 +16,47 @@
 package com.fipsoft.gradle.maven.repo.settings.strategies.maven
 
 import com.fipsoft.gradle.maven.repo.settings.MavenRepoSettingsPlugin
+import com.fipsoft.gradle.maven.repo.settings.adapter.MavenRepoSettingsAdapter
+import com.fipsoft.gradle.maven.repo.settings.api.MavenRepo
 import com.fipsoft.gradle.maven.repo.settings.ext.MavenRepoSettingsExtension
-import com.fipsoft.gradle.maven.repo.settings.ext.model.DefaultSettingSourceResolver
+import com.fipsoft.gradle.maven.repo.settings.model.SourceStrategy
+import com.fipsoft.gradle.maven.repo.settings.strategies.base.TestBase
+import com.fipsoft.gradle.maven.repo.settings.utils.ServerNodeNotFoundException
 import org.hamcrest.CoreMatchers
-import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
+import org.junit.rules.ExpectedException
 
 import static org.junit.Assert.*
 
 /**
  * @author Edgar Harutyunyan
  */
-class CoreTests extends MavenTestBase {
+class MavenTests extends TestBase {
 
-    @Before
-    void applyMavenRepoSettingsPlugin() {
+    @Rule
+    public ExpectedException thrown = ExpectedException.none()
+
+    MavenTests() {
+        super(SourceStrategy.MAVEN)
+
         project.with {
             apply plugin: 'com.fipsoft.maven-repo-settings'
         }
 
         project.with {
             repositories {
+                mavenCentral()
+
+                def filePath = mockSettingsFilePath
+
                 mavenInternal {
+
+                    conf {
+                        source filePath
+                        mode 'MAVEN'
+                    }
+
                     repo {
                         id 'test1'
                         url 'https://example1.com/'
@@ -51,9 +70,9 @@ class CoreTests extends MavenTestBase {
             }
         }
 
-        DefaultSettingSourceResolver.setMavenSettingsFileName(settingsFile.absolutePath)
         project.evaluate()
     }
+
 
     @Test
     void assertPluginApplies() {
@@ -67,12 +86,39 @@ class CoreTests extends MavenTestBase {
 
         assertNotNull(ext)
 
-        withRepoSpec(1) {
+        withMockRepo(1) {
             assertThat(ext.repos, CoreMatchers.hasItem(it))
         }
 
-        withRepoSpec(2) {
+        withMockRepo(2) {
             assertThat(ext.repos, CoreMatchers.hasItem(it))
+        }
+    }
+
+    @Test
+    void assertCredentialsAreCorrect() {
+        MavenRepoSettingsExtension ext = project.extensions.mavenInternal
+        MavenRepoSettingsAdapter adapter = ext.adapter
+
+        withMockRepo(1) { MavenRepo repo ->
+            def credentials = adapter.settingsAware.resolveCredentials(repo)
+
+            assert 'username1' == credentials.first
+            assert 'password1' == credentials.second
+        }
+
+    }
+
+
+    @Test
+    void nonExistingRepoShouldThrowServerNodeNotFound() {
+        MavenRepoSettingsExtension ext = project.extensions.mavenInternal
+        MavenRepoSettingsAdapter adapter = ext.adapter
+
+        withMockRepo(9999999) { MavenRepo r ->
+            thrown.expect(ServerNodeNotFoundException.class)
+            thrown.expectMessage("server node for ${r.id} not found")
+            adapter.settingsAware.resolveCredentials(r)
         }
     }
 }

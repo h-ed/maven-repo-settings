@@ -13,28 +13,17 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package com.fipsoft.gradle.maven.repo.settings.ext.model
 
-import groovy.transform.EqualsAndHashCode
-import groovy.transform.ToString
-import org.gradle.api.Incubating
+package com.fipsoft.gradle.maven.repo.settings.api
+
+import com.fipsoft.gradle.maven.repo.settings.model.SourceStrategy
 
 /**
  * @author Edgar Harutyunyan
- * @since 0.1
  */
-@Incubating
-@ToString(includes = 'repoId', includePackage = false)
-@EqualsAndHashCode(includes = ['repoId', 'repoUrl'])
-class RepoSpec {
-    String repoId
-    transient String repoUrl
+trait MavenRepoConfig {
 
-    def id(String repoId) {
-        this.repoId = repoId
-    }
+    abstract SourceStrategy getStrategy()
 
-    def url(String url) {
-        this.repoUrl = url
-    }
+    abstract String getCustomSettingsFilePath()
 }
