@@ -127,9 +127,16 @@ And in your settings.groovy file
 ```groovy
 servers = [
 
-   
-   [id: 'test1', username: 'username1',password: 'password1'],
-   
-   [id: 'test2',username: 'username2',password: 'password2']
+        [
+                id      : 'test1',
+                username: 'username1',
+                password: 'password1'
+        ],
+
+        [
+                id      : 'test2',
+                username: 'username2',
+                password: 'password2'
+        ]
 ]
 ```
