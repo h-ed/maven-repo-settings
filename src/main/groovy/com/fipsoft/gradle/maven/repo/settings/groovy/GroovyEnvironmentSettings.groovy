@@ -13,25 +13,28 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package com.fipsoft.gradle.maven.repo.settings.mvn
+package com.fipsoft.gradle.maven.repo.settings.groovy
 
 import com.fipsoft.gradle.maven.repo.settings.api.AbstractMavenRepoSettingsAware
 import com.fipsoft.gradle.maven.repo.settings.ext.MavenRepoSettingsExtension
 import com.fipsoft.gradle.maven.repo.settings.model.DefaultMavenRepoEntry
-import com.fipsoft.gradle.maven.repo.settings.model.SourceStrategy
 import com.fipsoft.gradle.maven.repo.settings.utils.ServerNodeNotFoundException
-import org.gradle.api.Incubating
+
+import static com.fipsoft.gradle.maven.repo.settings.model.SourceStrategy.GROOVY
 
 /**
  * @author Edgar Harutyunyan
  * @since 0.3.0
  */
-@Incubating
-class MavenEnvironmentSettings extends AbstractMavenRepoSettingsAware<DefaultMavenRepoEntry> {
+class GroovyEnvironmentSettings extends AbstractMavenRepoSettingsAware<DefaultMavenRepoEntry> {
     private Map<String, Tuple2<String, String>> repoCredentials = [:]
 
-    private MavenEnvironmentSettings(MavenRepoSettingsExtension ext) {
-        super(ext, SourceStrategy.MAVEN)
+    private GroovyEnvironmentSettings(MavenRepoSettingsExtension ext) {
+        super(ext, GROOVY)
+
+        if (!customSettingsFile || !customSettingsFile.exists() || !customSettingsFile.name.endsWith('groovy')) {
+            throw new RuntimeException("not valid source file found, consider specifying one in conf{} entry...")
+        }
     }
 
     @Override
@@ -55,51 +58,27 @@ class MavenEnvironmentSettings extends AbstractMavenRepoSettingsAware<DefaultMav
 
     @Override
     File getSettingsSourceFile() {
-        return customSettingsFile.exists() ? customSettingsFile : globalSettingsFile
+        return customSettingsFile
     }
 
 
-    static MavenEnvironmentSettings createInstance(MavenRepoSettingsExtension ext) {
-        MavenEnvironmentSettings mvn = new MavenEnvironmentSettings(ext)
-
-        withAggregatedRepoCredentials(mvn) { resolvedRepos ->
-            mvn.repoCredentials = resolvedRepos
+    static GroovyEnvironmentSettings createInstance(MavenRepoSettingsExtension ext) {
+        GroovyEnvironmentSettings g = new GroovyEnvironmentSettings(ext)
+        withAggregatedServers(ext) {
+            g.repoCredentials = it
         }
 
-        return mvn
+        return g
     }
 
-
-    private static void withAggregatedRepoCredentials(MavenEnvironmentSettings mvn, Closure c) {
+    private static void withAggregatedServers(MavenRepoSettingsExtension ext, Closure c) {
+        ConfigObject conf = new ConfigSlurper().parse(ext.userSettingsFile.toURI().toURL())
         Map<String, Tuple2<String, String>> aggregated = [:]
 
-        File mavenSettingsFile = mvn.globalSettingsFile
-        if (mavenSettingsFile && mavenSettingsFile.exists()) {
-            extractServers(mavenSettingsFile, aggregated)
-        }
-
-        File customSource = mvn.customSettingsFile
-        if (customSource && customSource.exists()) {
-            extractServers(customSource, aggregated)
+        conf.servers.each {
+            aggregated.put(it.id, new Tuple2<String, String>(it.username, it.password))
         }
 
         c.call(aggregated)
-    }
-
-
-    private static void extractServers(File file, Map<String, Tuple2<String, String>> container) {
-        if (file && file.exists()) {
-            def xmlRoot = new XmlSlurper().parse(file)
-
-            xmlRoot.servers.server.each {
-                String serverId = it.id
-                String username = it.username
-                String password = it.password
-
-                if (serverId) {
-                    container.put(serverId, new Tuple2<String, String>(username, password))
-                }
-            }
-        }
     }
 }

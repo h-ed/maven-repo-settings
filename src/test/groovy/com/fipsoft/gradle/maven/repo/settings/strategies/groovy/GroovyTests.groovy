@@ -13,7 +13,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package com.fipsoft.gradle.maven.repo.settings.strategies.maven
+package com.fipsoft.gradle.maven.repo.settings.strategies.groovy
 
 import com.fipsoft.gradle.maven.repo.settings.MavenRepoSettingsPlugin
 import com.fipsoft.gradle.maven.repo.settings.adapter.MavenRepoSettingsAdapter
@@ -32,13 +32,12 @@ import static org.junit.Assert.*
 /**
  * @author Edgar Harutyunyan
  */
-class MavenTests extends TestBase {
-
+class GroovyTests extends TestBase {
     @Rule
     public ExpectedException thrown = ExpectedException.none()
 
-    MavenTests() {
-        super(SourceStrategy.MAVEN)
+    GroovyTests() {
+        super(SourceStrategy.GROOVY)
 
         project.with {
             apply plugin: 'com.fipsoft.maven-repo-settings'
@@ -51,7 +50,6 @@ class MavenTests extends TestBase {
                 def filePath = mockSettingsFilePath
 
                 mavenInternal {
-
                     conf {
                         source filePath
                     }
@@ -71,7 +69,6 @@ class MavenTests extends TestBase {
 
         project.evaluate()
     }
-
 
     @Test
     void assertPluginApplies() {

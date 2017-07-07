@@ -16,11 +16,10 @@
 package com.fipsoft.gradle.maven.repo.settings.adapter
 
 import com.fipsoft.gradle.maven.repo.settings.api.AbstractMavenRepoSettingsAware
-import com.fipsoft.gradle.maven.repo.settings.ext.MavenRepoSettingsExtension
 import com.fipsoft.gradle.maven.repo.settings.api.MavenRepo
-import com.fipsoft.gradle.maven.repo.settings.api.MavenRepoConfig
+import com.fipsoft.gradle.maven.repo.settings.ext.MavenRepoSettingsExtension
+import com.fipsoft.gradle.maven.repo.settings.groovy.GroovyEnvironmentSettings
 import com.fipsoft.gradle.maven.repo.settings.mvn.MavenEnvironmentSettings
-import com.fipsoft.gradle.maven.repo.settings.model.SourceStrategy
 import org.gradle.api.Project
 import org.gradle.api.ProjectEvaluationListener
 import org.gradle.api.ProjectState
@@ -63,18 +62,19 @@ class MavenRepoSettingsAdapter implements ProjectEvaluationListener {
     }
 
     private void initEnvironmentSettings() {
-        MavenRepoConfig configObject = extension.configObject
+        String settingsFile = extension.configObject.userSettingsFilePath
 
-        if (SourceStrategy.MAVEN == configObject.strategy) {
+        if (settingsFile.endsWith('xml')) {
             settingsAware = MavenEnvironmentSettings.createInstance(extension)
             return
         }
 
-        if (SourceStrategy.GROOVY == configObject.strategy) {
-            throw new RuntimeException("Groovy not supported yet")
+        if (settingsFile.endsWith('groovy')) {
+            settingsAware = GroovyEnvironmentSettings.createInstance(extension)
+            return
         }
 
-        throw new RuntimeException("Unknown strategy: ${configObject.strategy}")
+        throw new RuntimeException("Unknown settings file: ${settingsFile}")
     }
 
 

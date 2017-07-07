@@ -1,5 +1,5 @@
 # Gradle maven-repo-settings plugin
-_Gradle Custom Maven Repository Settings Plugin_
+_Resolve maven repository credentials from custom files_
 
 Inspired by [maven-settings](https://github.com/mark-vieira/gradle-maven-settings-plugin), this plugin 
 aims to facilitate authentication for the enterprise/internal maven repositories.
@@ -7,7 +7,7 @@ aims to facilitate authentication for the enterprise/internal maven repositories
  
 ## Usage
 To use the plugin, add the following to your `build.gradle` file.
-
+```groovy
     buildscript {
         
         repositories {
@@ -17,17 +17,17 @@ To use the plugin, add the following to your `build.gradle` file.
         }
         
         dependencies {
-            classpath 'com.fipsoft.gradle:maven-repo-settings:0.2.2'
+            classpath 'com.fipsoft.gradle:maven-repo-settings:0.3.0'
         }
     }
-
-    apply plugin: 'com.fipsoft.maven-repo-settings'
     
+    apply plugin: 'com.fipsoft.maven-repo-settings'
+```
 For Gradle 2.1+ you can use the new plugin mechanism to download the plugin from the 
 [Gradle Plugin Portal](http://plugins.gradle.org/).
     
     plugins {
-      id "com.fipsoft.maven-repo-settings" version "0.2.2"
+      id "com.fipsoft.maven-repo-settings" version "0.3.0"
     }
 
 
@@ -38,10 +38,9 @@ To define *internal* repository, just declare `mavenInternal` repository in your
     repositories {
        
          mavenCentral()
-
+         //..other  standards repositories   
          
          mavenInternal {
-              
               repo {
                  id 'yourRepo1Id'
                  url 'yourRepo1Url'
@@ -54,7 +53,16 @@ To define *internal* repository, just declare `mavenInternal` repository in your
          }
     }
 ```
-The plugin will search repository definition first from `user.home/.m2/settings.xml`, and then
+
+You can also customize the *source* file for configuration with following entry in your _mavenInternal_
+
+```groovy
+  conf {
+        source  //your settings file path to resolve repository credentials
+     }
+```
+
+By default plugin will apply MAVEN mode for you and as a source file will attempt to find repository definition first from `user.home/.m2/settings.xml`, and then
 `$M2_HOME/conf/settings.xml` or `$MAVEN_HOME` for old maven usages
 
 ### Example of server definition in settings.xml
@@ -78,7 +86,6 @@ in _mavenInternal_ closure
 >`$M2_HOME/conf/settings.xml` (or $MAVEN_HOME for an older versions of Maven)
 
 ## Alternative sources for repo definition
-todo: in progres...
 
 In often cases you might define your internal repository credentials other place than `settings.xml` file.
 For example in [Grails 2](http://docs.grails.org/2.5.x/guide/conf.html#dependencyRepositories) authentication done by
@@ -98,7 +105,9 @@ in your `mavenInternal` block
 
          
          mavenInternal {
-              credentialSource = "${user.home}/.grails/settings.groovy"
+              conf {
+                 source  "${user.home}/.grails/settings.groovy"
+              }
               
               repo {
                  id 'yourRepo1Id'
@@ -116,12 +125,11 @@ in your `mavenInternal` block
 And in your settings.groovy file
 
 ```groovy
-    servers {
-        
-        server {
-            id = yourRepoId
-            username = repoUsername
-            password = repoPassword
-        }
-    }
+servers = [
+
+   
+   [id: 'test1', username: 'username1',password: 'password1'],
+   
+   [id: 'test2',username: 'username2',password: 'password2']
+]
 ```

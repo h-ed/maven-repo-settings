@@ -54,32 +54,21 @@ class TestBase {
 
     static final String VALID_GROOVY_SETTINGS =
             '''
-def internalRepositories = [
-        'test1'        : [userame: 'username1', password: 'password1'],
-        'test2'       : [userame: 'username2', password: 'password2'],
-]
-
 //maven authentication
-servers {
-    internalRepositories.each { key, value ->
-        server {
-            id = key
-            username = value.userame
-            password = value.password
-        }
-    }
-}
+servers = [
 
-//ivy authentication
-grails.project.dependency.authentication = {
-    internalRepositories.each { key, value ->
-        credentials {
-            id = key
-            username = value.userame
-            password = value.password
-        }
-    }
-}
+        [
+                id      : 'test1',
+                username: 'username1',
+                password: 'password1'
+        ],
+
+        [
+                id      : 'test2',
+                username: 'username2',
+                password: 'password2'
+        ]
+]
 '''
 
 
@@ -100,7 +89,7 @@ grails.project.dependency.authentication = {
 
         dir.mkdirs()
 
-        mockSettingsSourceFile = new File(dir, "settings.${strategy == MAVEN ? 'xml' : 'groovy'}")
+        mockSettingsSourceFile = new File(dir, "settings." + (strategy == MAVEN ? 'xml' : 'groovy'))
         mockSettingsSourceFile.setText('')
         mockSettingsSourceFile << (strategy == MAVEN ? VALID_MAVEN_SETTINGS_XML : VALID_GROOVY_SETTINGS)
         project = new ProjectBuilder().build()
@@ -113,8 +102,8 @@ grails.project.dependency.authentication = {
         project = null
     }
 
-    String getMockSettingsFilePath() {
-        return "build/tmp/settings.${strategy == MAVEN ? 'xml' : 'groovy'}"
+    static String getMockSettingsFilePath() {
+        return mockSettingsSourceFile.toURI().path
     }
 
 
