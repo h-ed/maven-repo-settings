@@ -23,6 +23,7 @@ import com.fipsoft.gradle.maven.repo.settings.mvn.MavenEnvironmentSettings
 import org.gradle.api.Project
 import org.gradle.api.ProjectEvaluationListener
 import org.gradle.api.ProjectState
+import org.gradle.api.publish.PublishingExtension
 
 /**
  * @author Edgar Harutyunyan
@@ -54,6 +55,27 @@ class MavenRepoSettingsAdapter implements ProjectEvaluationListener {
                     url repo.url
                 }
             }
+        }
+
+        try {
+            PublishingExtension publishingExt = (PublishingExtension) project.extensions.getByName('publishing')
+            publishingExt.repositories.each { r ->
+                def resolvedRepoEntry = extension.repos.find { it.id == r.name }
+                if (resolvedRepoEntry) {
+                    def c = settingsAware.resolveCredentials(resolvedRepoEntry)
+                    publishingExt.repositories {
+                        delegate.maven {
+                            credentials {
+                                username "${c.getFirst()}"
+                                password "${c.getSecond()}"
+                            }
+                            url resolvedRepoEntry.url
+                        }
+                    }
+                }
+            }
+        } catch (ignore) {
+            println "not publishing extension found, skipping check..."
         }
     }
 
