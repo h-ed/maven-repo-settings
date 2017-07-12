@@ -59,23 +59,22 @@ class MavenRepoSettingsAdapter implements ProjectEvaluationListener {
 
         try {
             PublishingExtension publishingExt = (PublishingExtension) project.extensions.getByName('publishing')
+
             publishingExt.repositories.each { r ->
-                def resolvedRepoEntry = extension.repos.find { it.id == r.name }
-                if (resolvedRepoEntry) {
-                    def c = settingsAware.resolveCredentials(resolvedRepoEntry)
-                    publishingExt.repositories {
-                        delegate.maven {
-                            credentials {
-                                username "${c.getFirst()}"
-                                password "${c.getSecond()}"
-                            }
-                            url resolvedRepoEntry.url
-                        }
+                def credentials = r.credentials
+                if (credentials) {
+                    def resolvedRepoEntry = extension.repos.find { it.id == r.name }
+                    if (resolvedRepoEntry) {
+                        def c = settingsAware.resolveCredentials(resolvedRepoEntry)
+
+                        r.credentials.username = "${c.getFirst()}"
+                        r.credentials.password = "${c.getSecond()}"
                     }
                 }
+
             }
         } catch (ignore) {
-            println "not publishing extension found, skipping check..."
+            // "no publishing extension found, skipping check..."
         }
     }
 
